@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html ng-app = "myApp">
+	<style>
+	#header{
+	background-color: #E4DFDF;
+    box-shadow: 10px 10px 10px #B5AFAF;
+    padding-bottom: 10px;
+    margin-bottom: 13px;
+	}
+	
+	h3{
+	padding-top: 13px;
+	}
+	#mailImage{
+	width: 30px;
+    height: 32px;
+    float: left;
+    margin-top: 16px;
+    margin-left: 5px;
+	}
+	#Search{
+	margin-bottom: 12px;
+	width: 100%;
+    height: 41px;
+    background-color: #DCD7D7;
+    padding: 17px;
+    padding-left: 55px;
+    border: 1px solid #f5f5f5;
+    background-image: url('http://i47.tinypic.com/r02vbq.png');
+    background-repeat: no-repeat;
+    background-position: left center;
+    outline: 0;
+    box-shadow: 10px 10px 5px #DAD0D0;
+	}
+	.messageWellUnread{
+	height: 200px;
+    padding: 17px;
+    margin-bottom: 0px;
+    background-color: #B7D7E6;
+    border: 2px solid #DFD7D7;
+	}
+	.messageWellRead{
+	height: 200px;
+    padding: 17px;
+    margin-bottom: 0px;
+    background-color: #cfcff5;
+    border: 2px solid #DFD7D7;
+	}
+	.modal{
+    display: block; 
+	}
+	.modal-dialog{
+		overflow-y: initial;
+	}
+	.modal-body{
+		height: 250px;
+		overflow-y: auto;
+	}
+	@media only screen and (max-width: 500px) {
+    #pencilIcon {
+        margin-left: 203px;
+    }
+	}
+	@media only screen and (min-width: 501px) {
+    #pencilIcon {
+        margin-left: 125px;
+    }
+	}
+	</style>
+<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.4.0/css/font-awesome.min.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.9.0/moment.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/angular-moment/0.9.0/angular-moment.min.js"></script>
+<body ng-controller = "myCtrl" style = "background-color: #E6E4E4">
+	
+	<div id = "header" class="row">
+		<div class="col-sm-10" >
+			<i class="fa fa-bars fa-2x" aria-hidden="true " aria-hidden="true" style = "float: left;margin-top: 18px;margin-left: 5px;"></i>
+			<img id = "mailImage" src = "https://cdn2.iconfinder.com/data/icons/metro-uinvert-dock/128/Mail.png" /> 
+			<p style = "float: left;font-size: 15px;margin-top: 20px;margin-left: 5px;">All Inboxes</p>
+
+		</div>
+		<div class="col-sm-2"">
+			<i id = "pencilIcon" class="fa fa-pencil-square-o fa-2x" aria-hidden="true" style = "float: left;margin-top: 19px;"></i>&nbsp &nbsp &nbsp 
+			<i class="fa fa-ellipsis-v fa-2x" aria-hidden="true" style = "float:left;margin-left: 13px;margin-top: 18px;"></i> 
+		</div>
+		<br>
+		
+
+	</div>
+	
+	<div>
+	<input id = "Search" type = "text" placeholder = " Enter your search " autofocus = "autofocus" ng-model = "mails"></input> 
+	</div>
+	<div ng-repeat="individualData in data | filter:mails" class="messageWell" >
+	<div ng-class='whatClassIsIt(individualData.isRead)'>
+	<i type = "button" class="material-icons" style = "float:right" ng-hide=individualData.isStarred ng-model="checked" ng-init="checked=individualData.isStarred" ng-click = "individualData.isStarred = !individualData.isStarred">star_border</i>
+	<i type = "button" class="material-icons" style = "float:right" ng-show=individualData.isStarred ng-model="checked" ng-init="checked=individualData.isStarred" ng-click = "individualData.isStarred = !individualData.isStarred">star</i>
+	<i type = "button" class="fa fa-trash-o" aria-hidden="true" style = "float: right;margin-right: 6px;margin-top:6px" ng-click = toDelete(individualData.id)></i>
+	<span ng-repeat = "participant in individualData.participants" style = "color: #262626;font-size:140%;font-family: Copperplate / Copperplate Gothic Light, sans-serif;"><b>{{participant}}</b>&nbsp &nbsp</span>
+	<p style = "color: #333333;font-size:120%;font-family: ‘Times New Roman’, Times, serif;"><i>{{individualData.subject}}</i></p>
+	<p style = "font-size:100%;font-family: ‘Courier New’, Courier, monospace;">{{individualData.preview}}</p>
+	 <button type="button" class="btn btn-info btn-lg" ng-click = messageDisplay(individualData.id) data-toggle="modal" data-target="#myModal" style = "    margin-top: 22px;;float: right;width: 91px;height: 30px;text-align: center;padding: 3px;background-color: Transparent;"><i class="fa fa-ellipsis-h" aria-hidden="true"></i></button>
+	<!--Used Moment.JS -->
+	<time am-time-ago={{individualData.ts}}></time><br>
+  <!-- Trigger the modal with a button -->
+ 
+
+  <!-- Modal -->
+  <div class="modal fade" id="myModal" role="dialog">
+    <div class="modal-dialog">
+    
+      <!-- Modal content-->
+      <div class="modal-content" style = "background-color: #c2e2e6;">
+        <div class="modal-header"  style = "background-color: #e1effb;">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <div class="modal-title" ng-repeat = "participant in messageContent.participants">
+		  <h3 "color: #262626;font-size:140%;font-family: Copperplate / Copperplate Gothic Light, sans-serif;">{{participant.name}}</h3>
+		  <h4 "color: #262626;font-size:140%;font-family: Copperplate / Copperplate Gothic Light, sans-serif;">{{participant.email}}</h4>
+		  </div>
+         <p style = "color: #333333;font-size:120%;font-family: ‘Times New Roman’, Times, serif;">Subject :: {{messageContent.subject}}</p>
+		</div>
+        <div class="modal-body" style = "background-color: #d6ebf5;">
+          
+		  <p style = "font-size:100%;font-family: ‘Courier New’, Courier, monospace;">{{messageContent.body}}</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+  
+	
+	</div>
+	</div>
+<script>
+var app = angular.module('myApp', ['angularMoment']);
+//Designing the controller part
+app.controller('myCtrl', function($scope,$http) {
+	//On Page load the following will happen
+	//Requesting to fetch all messges
+	$http({
+		  method: 'GET',
+		  url: 'http://localhost:8083/allMessages'
+		}).then(function successCallback(response) {
+		   
+		    
+			 $scope.data = response.data;
+			 $scope.imageValue = "star_border";	
+			
+		  }, function errorCallback(response) {
+			
+		  });
+		  
+		  //When we click delete 
+		  
+		  $scope.toDelete = function(toDeleteId){
+		$http({
+		  method: 'DELETE',
+		  url: 'http://localhost:8083/message/'+toDeleteId
+		}).then(function successCallback(response) {
+		  
+			
+			reload();
+		  }, function errorCallback(response) {
+			console.log("Error Unable to Delete Message with Id"+toDeleteId);
+			reload();	
+			
+		  });
+		  }
+		//Generic function to reload the page 
+		var reload = function(){
+			console.log("coming to reload");
+			location.reload();
+		}
+		// opening the message
+		$scope.messageDisplay = function(messageId){
+		console.log("messageId ::  "+ messageId);
+		$http({
+		  method: 'GET',
+		  url: 'http://localhost:8083/message/'+messageId
+		}).then(function successCallback(response) {
+		    console.log("response :: "+ JSON.stringify(response.data)); 
+			$scope.messageContent = response.data;
+			
+		  }, function errorCallback(response) {
+			console.log("Error Unable to get Message with Id"+messageId);
+			
+		
+		  });
+		  }
+		
+		//Using ng-Class to decide if the message has been read or not
+		$scope.whatClassIsIt = function(isRead){
+	
+		if(isRead == true){
+		return 'messageWellRead'
+		}
+		if(isRead == false){
+		return 'messageWellUnread'
+		}
+		}
+});
+</script>
+
+</body>
+</html>
+
+
